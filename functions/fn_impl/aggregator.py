@@ -123,7 +123,10 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         "peak_count": peak_count,
         "top_job_category": top_func[0],
         "top_job_category_count": top_func[1],
+        "offer_sent": offer_count,
+        "hired_count": hired_count,
         "offer_acceptance_rate": offer_acceptance_rate,
+        "offer_target": 80,
         "avg_hire_days": avg_hire_days,
         "active_pipeline": active_pipeline,
     }

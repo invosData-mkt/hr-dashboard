@@ -14,7 +14,10 @@
     "peak_count": 283,
     "top_job_category": "PM",
     "top_job_category_count": 252,
+    "offer_sent": 16,
+    "hired_count": 14,
     "offer_acceptance_rate": 87.5,
+    "offer_target": 80,
     "avg_hire_days": 41.2,
     "active_pipeline": 533
   },

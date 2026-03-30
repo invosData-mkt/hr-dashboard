@@ -1,10 +1,10 @@
 import { OFFER_DATA } from "../utils/constants";
 
 export default function OfferAcceptance({ kpi }) {
+  const offerSent = kpi?.offer_sent ?? OFFER_DATA.offerSent;
+  const hired = kpi?.hired_count ?? OFFER_DATA.hired;
   const rate = kpi?.offer_acceptance_rate ?? OFFER_DATA.rate;
-  const offerSent = OFFER_DATA.offerSent;
-  const hired = kpi?.active_pipeline ? OFFER_DATA.hired : OFFER_DATA.hired;
-  const target = OFFER_DATA.target;
+  const target = kpi?.offer_target ?? OFFER_DATA.target;
   const reached = rate >= target;
 
   return (
