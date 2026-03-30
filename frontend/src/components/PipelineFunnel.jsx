@@ -1,30 +1,37 @@
 import { PIPELINE_SNAPSHOT } from "../utils/constants";
 
-export default function PipelineFunnel() {
+const STAGE_STYLE_MAP = {};
+PIPELINE_SNAPSHOT.forEach((s) => {
+  STAGE_STYLE_MAP[s.stage] = { color: s.color, barColor: s.barColor };
+});
+
+export default function PipelineFunnel({ pipeline }) {
+  const stages = pipeline?.length ? pipeline : PIPELINE_SNAPSHOT;
+
   return (
     <div>
       <div style={noteChipStyle}>
-        ⚠ Pipeline 為 2026/3/19 當下快照，不隨時間區間變動
+        ⚠ Pipeline 為當前快照，不隨時間區間變動
       </div>
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${PIPELINE_SNAPSHOT.length}, 1fr)`,
+          gridTemplateColumns: `repeat(${stages.length}, 1fr)`,
           gap: 6,
           marginBottom: 12,
         }}
       >
-        {PIPELINE_SNAPSHOT.map((s, i) => (
-          <div key={s.stage} style={stageStyle}>
-            <div style={{ fontSize: 20, fontWeight: 600, color: s.color }}>{s.count}</div>
-            <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>{s.stage}</div>
-            <div style={{ height: 3, borderRadius: 2, marginTop: 7, background: s.barColor }} />
-            {/* Connector arrow */}
-            {i < PIPELINE_SNAPSHOT.length - 1 && (
-              <span style={arrowStyle}>›</span>
-            )}
-          </div>
-        ))}
+        {stages.map((s, i) => {
+          const style = STAGE_STYLE_MAP[s.stage] || { color: "#888", barColor: "#D3D1C7" };
+          return (
+            <div key={s.stage} style={stageStyle}>
+              <div style={{ fontSize: 20, fontWeight: 600, color: style.color }}>{s.count}</div>
+              <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>{s.stage}</div>
+              <div style={{ height: 3, borderRadius: 2, marginTop: 7, background: style.barColor }} />
+              {i < stages.length - 1 && <span style={arrowStyle}>›</span>}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

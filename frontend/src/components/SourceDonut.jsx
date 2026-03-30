@@ -1,9 +1,11 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { SOURCE_COLORS, SOURCE_DATA } from "../utils/constants";
 
-const total = SOURCE_DATA.reduce((s, d) => s + d.count, 0);
+export default function SourceDonut({ sources }) {
+  const data = sources?.length ? sources : SOURCE_DATA;
+  const nameKey = data[0]?.source !== undefined ? "source" : "source";
+  const total = data.reduce((s, d) => s + d.count, 0);
 
-export default function SourceDonut() {
   return (
     <div style={cardStyle}>
       <div style={headerStyle}>
@@ -14,9 +16,8 @@ export default function SourceDonut() {
         全部 {total} 筆
       </p>
 
-      {/* Legend */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
-        {SOURCE_DATA.map((s, i) => (
+        {data.map((s, i) => (
           <span
             key={s.source}
             style={{ fontSize: 11, color: "#888", display: "flex", alignItems: "center", gap: 5 }}
@@ -26,7 +27,7 @@ export default function SourceDonut() {
                 width: 9,
                 height: 9,
                 borderRadius: 2,
-                background: SOURCE_COLORS[i],
+                background: SOURCE_COLORS[i % SOURCE_COLORS.length],
                 flexShrink: 0,
               }}
             />
@@ -39,7 +40,7 @@ export default function SourceDonut() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={SOURCE_DATA}
+              data={data}
               dataKey="count"
               nameKey="source"
               cx="50%"
@@ -48,8 +49,8 @@ export default function SourceDonut() {
               outerRadius="80%"
               paddingAngle={1}
             >
-              {SOURCE_DATA.map((_, i) => (
-                <Cell key={i} fill={SOURCE_COLORS[i]} stroke="none" />
+              {data.map((_, i) => (
+                <Cell key={i} fill={SOURCE_COLORS[i % SOURCE_COLORS.length]} stroke="none" />
               ))}
             </Pie>
             <Tooltip

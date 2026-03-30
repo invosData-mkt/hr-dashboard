@@ -1,0 +1,251 @@
+{
+  "meta": {
+    "total_records": 426,
+    "filtered_records": 426,
+    "date_range": {
+      "start": "2025-05-01",
+      "end": "2026-03-27"
+    }
+  },
+  "kpi": {
+    "total_applicants": 426,
+    "monthly_average": 38.7,
+    "peak_month": "2025/05",
+    "peak_count": 68,
+    "top_job_category": "PM",
+    "top_job_category_count": 153,
+    "offer_acceptance_rate": 87.5,
+    "avg_hire_days": 41.0,
+    "active_pipeline": 146
+  },
+  "pipeline": [
+    {
+      "stage": "初步篩選",
+      "count": 90
+    },
+    {
+      "stage": "HR 電話",
+      "count": 16
+    },
+    {
+      "stage": "一面",
+      "count": 18
+    },
+    {
+      "stage": "最終面試",
+      "count": 6
+    },
+    {
+      "stage": "發出 Offer",
+      "count": 2
+    },
+    {
+      "stage": "已錄取",
+      "count": 14
+    },
+    {
+      "stage": "已結案",
+      "count": 280
+    }
+  ],
+  "trend": [
+    {
+      "month": "2025/05",
+      "total": 68,
+      "by_category": {
+        "MKT": 12,
+        "AM": 17,
+        "DA": 2,
+        "PM": 27,
+        "HR": 8,
+        "BizDev": 2
+      }
+    },
+    {
+      "month": "2025/06",
+      "total": 43,
+      "by_category": {
+        "HR": 4,
+        "DA": 8,
+        "PM": 5,
+        "AM": 16,
+        "MKT": 10
+      }
+    },
+    {
+      "month": "2025/07",
+      "total": 21,
+      "by_category": {
+        "HR": 8,
+        "PM": 5,
+        "DA": 3,
+        "BizDev": 1,
+        "MKT": 4
+      }
+    },
+    {
+      "month": "2025/08",
+      "total": 33,
+      "by_category": {
+        "PM": 20,
+        "MKT": 4,
+        "DMKT": 5,
+        "HR": 3,
+        "RD": 1
+      }
+    },
+    {
+      "month": "2025/09",
+      "total": 57,
+      "by_category": {
+        "PM": 19,
+        "HR": 13,
+        "DMKT": 13,
+        "AM": 10,
+        "MKT": 2
+      }
+    },
+    {
+      "month": "2025/10",
+      "total": 67,
+      "by_category": {
+        "AM": 21,
+        "HR": 13,
+        "DMKT": 23,
+        "PM": 10
+      }
+    },
+    {
+      "month": "2025/11",
+      "total": 64,
+      "by_category": {
+        "PM": 57,
+        "BizDev": 1,
+        "AM": 3,
+        "HR": 2,
+        "DMKT": 1
+      }
+    },
+    {
+      "month": "2025/12",
+      "total": 4,
+      "by_category": {
+        "PM": 2,
+        "AM": 1,
+        "HR": 1
+      }
+    },
+    {
+      "month": "2026/01",
+      "total": 9,
+      "by_category": {
+        "PM": 5,
+        "RD": 3,
+        "HR": 1
+      }
+    },
+    {
+      "month": "2026/02",
+      "total": 16,
+      "by_category": {
+        "AM": 8,
+        "PM": 3,
+        "BizDev": 5
+      }
+    },
+    {
+      "month": "2026/03",
+      "total": 44,
+      "by_category": {
+        "Other": 14,
+        "Designer": 10,
+        "AM": 6,
+        "BizDev": 9,
+        "MKT": 4,
+        "DMKT": 1
+      }
+    }
+  ],
+  "source_breakdown": [
+    {
+      "source": "104",
+      "count": 274
+    },
+    {
+      "source": "LinkedIn",
+      "count": 62
+    },
+    {
+      "source": "cake",
+      "count": 20
+    },
+    {
+      "source": "Referal",
+      "count": 13
+    },
+    {
+      "source": "Yourator",
+      "count": 13
+    },
+    {
+      "source": "HeadHunter",
+      "count": 6
+    }
+  ],
+  "job_category_breakdown": [
+    {
+      "category": "PM",
+      "count": 153
+    },
+    {
+      "category": "AM",
+      "count": 82
+    },
+    {
+      "category": "HR",
+      "count": 53
+    },
+    {
+      "category": "DMKT",
+      "count": 43
+    },
+    {
+      "category": "MKT",
+      "count": 36
+    },
+    {
+      "category": "BizDev",
+      "count": 18
+    },
+    {
+      "category": "Other",
+      "count": 14
+    },
+    {
+      "category": "DA",
+      "count": 13
+    },
+    {
+      "category": "Designer",
+      "count": 10
+    },
+    {
+      "category": "RD",
+      "count": 4
+    }
+  ],
+  "closed_reasons": [
+    {
+      "reason": "Rejected",
+      "count": 165
+    },
+    {
+      "reason": "Candidate Rejected",
+      "count": 57
+    },
+    {
+      "reason": "Pending response",
+      "count": 58
+    }
+  ]
+}

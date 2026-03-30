@@ -10,9 +10,12 @@ import {
 } from "recharts";
 import { CLOSED_REASONS_DATA } from "../utils/constants";
 
-const total = CLOSED_REASONS_DATA.reduce((s, d) => s + d.count, 0);
+const DEFAULT_COLORS = { Rejected: "#E24B4A", "Candidate Rejected": "#EF9F27", "Pending response": "#888780" };
 
-export default function ClosedReasonBar() {
+export default function ClosedReasonBar({ reasons }) {
+  const data = reasons?.length ? reasons : CLOSED_REASONS_DATA;
+  const total = data.reduce((s, d) => s + d.count, 0);
+
   return (
     <div style={cardStyle}>
       <div style={headerStyle}>
@@ -23,15 +26,14 @@ export default function ClosedReasonBar() {
         {total} 筆已結案
       </p>
 
-      {/* Legend */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginBottom: 12 }}>
-        {CLOSED_REASONS_DATA.map((r) => (
+        {data.map((r) => (
           <span
             key={r.reason}
             style={{ fontSize: 11, color: "#888", display: "flex", alignItems: "center", gap: 5 }}
           >
             <span
-              style={{ width: 9, height: 9, borderRadius: 2, background: r.color, flexShrink: 0 }}
+              style={{ width: 9, height: 9, borderRadius: 2, background: r.color || DEFAULT_COLORS[r.reason] || "#888", flexShrink: 0 }}
             />
             {r.reason} {r.count}
           </span>
@@ -40,14 +42,14 @@ export default function ClosedReasonBar() {
 
       <div style={{ position: "relative", height: 150 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={CLOSED_REASONS_DATA} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
+          <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
             <CartesianGrid stroke="rgba(0,0,0,0.05)" vertical={false} />
             <XAxis dataKey="reason" tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} />
             <Tooltip contentStyle={{ fontSize: 11 }} />
             <Bar dataKey="count" name="人數" radius={[4, 4, 0, 0]}>
-              {CLOSED_REASONS_DATA.map((r) => (
-                <Cell key={r.reason} fill={r.color} />
+              {data.map((r) => (
+                <Cell key={r.reason} fill={r.color || DEFAULT_COLORS[r.reason] || "#888"} />
               ))}
             </Bar>
           </BarChart>

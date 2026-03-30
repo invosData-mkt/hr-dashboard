@@ -15,7 +15,7 @@ export default function App() {
 
   return (
     <div>
-      <Header />
+      <Header meta={data?.meta} />
 
       <FilterBar
         activePreset={activePreset}
@@ -26,28 +26,28 @@ export default function App() {
       />
 
       <main style={{ maxWidth: 1080, margin: "0 auto", padding: "20px 24px 60px" }}>
-        {/* ── 期間摘要 ── */}
+        {/* 期間摘要 */}
         <SectionTitle>期間摘要</SectionTitle>
         <KpiCards data={data} />
 
-        {/* ── 收件趨勢 ── */}
+        {/* 收件趨勢 */}
         <SectionTitle>收件趨勢</SectionTitle>
         <TrendChart data={data} />
 
-        {/* ── 職缺類別 + 履歷來源 ── */}
+        {/* 職缺類別 + 履歷來源 */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
           <JobCategoryDonut data={data} />
-          <SourceDonut />
+          <SourceDonut sources={data?.sourceBreakdown} />
         </div>
 
-        {/* ── 整體 Pipeline ── */}
+        {/* 整體 Pipeline */}
         <SectionTitle>整體 Pipeline（當前快照）</SectionTitle>
-        <PipelineFunnel />
+        <PipelineFunnel pipeline={data?.pipeline} />
 
-        {/* ── 結案原因 + Offer 接受率 ── */}
+        {/* 結案原因 + Offer 接受率 */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
-          <ClosedReasonBar />
-          <OfferAcceptance />
+          <ClosedReasonBar reasons={data?.closedReasons} />
+          <OfferAcceptance kpi={data?.kpi} />
         </div>
       </main>
     </div>

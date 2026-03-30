@@ -1,5 +1,6 @@
 """Read applicant records from a Notion database via HTTP API with pagination."""
 
+import re
 import time
 
 import httpx
@@ -47,6 +48,16 @@ def _extract_text(prop: dict) -> str:
     return ""
 
 
+def _parse_chinese_date(s: str) -> str:
+    """Parse '2025年10月1日 下午1:41' → '2025-10-01'."""
+    if not s:
+        return ""
+    m = re.match(r"(\d{4})年(\d{1,2})月(\d{1,2})日", s)
+    if m:
+        return f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+    return ""
+
+
 def _parse_page(page: dict) -> dict:
     props = page.get("properties", {})
 
@@ -57,12 +68,18 @@ def _parse_page(page: dict) -> dict:
     raw_func = _extract_text(props.get(PROP_FUNCTION, {}))
     func_abbr = FUNCTION_TO_ABBR.get(raw_func, raw_func or "Other")
 
+    # apply_date: use 收件日期, fallback to Created time (Chinese format)
+    apply_date = _extract_text(props.get(PROP_APPLY_DATE, {}))
+    if not apply_date:
+        created_time_text = _extract_text(props.get("Created time", {}))
+        apply_date = _parse_chinese_date(created_time_text)
+
     return {
         "name": _extract_text(props.get(PROP_NAME, {})),
         "raw_status": raw_status,
         "stage": stage,
         "closed_reason": closed_reason,
-        "apply_date": _extract_text(props.get(PROP_APPLY_DATE, {})),
+        "apply_date": apply_date,
         "source": _extract_text(props.get(PROP_SOURCE, {})),
         "function": func_abbr,
         "onboard_date": _extract_text(props.get(PROP_ONBOARD_DATE, {})),

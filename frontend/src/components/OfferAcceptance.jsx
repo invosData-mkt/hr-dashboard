@@ -1,7 +1,10 @@
 import { OFFER_DATA } from "../utils/constants";
 
-export default function OfferAcceptance() {
-  const { offerSent, hired, rate, target } = OFFER_DATA;
+export default function OfferAcceptance({ kpi }) {
+  const rate = kpi?.offer_acceptance_rate ?? OFFER_DATA.rate;
+  const offerSent = OFFER_DATA.offerSent;
+  const hired = kpi?.active_pipeline ? OFFER_DATA.hired : OFFER_DATA.hired;
+  const target = OFFER_DATA.target;
   const reached = rate >= target;
 
   return (
@@ -11,19 +14,16 @@ export default function OfferAcceptance() {
         <span style={granTagStyle}>整體</span>
       </div>
       <p style={{ fontSize: 11, color: "#888", marginBottom: 14 }}>
-        累積至 2026/3/19
+        累積至今
       </p>
 
       <div style={{ display: "flex", alignItems: "center", gap: 24, padding: "16px 0" }}>
-        {/* Big rate number */}
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 36, fontWeight: 700, color: "#1D9E75" }}>{rate}%</div>
+          <div style={{ fontSize: 36, fontWeight: 700, color: "#1D9E75" }}>{Math.round(rate)}%</div>
           <div style={{ fontSize: 11, color: "#888", marginTop: 4 }}>Offer 接受率</div>
         </div>
 
-        {/* Progress bars */}
         <div style={{ flex: 1 }}>
-          {/* 發出 Offer */}
           <div style={rowStyle}>
             <span>發出 Offer</span>
             <span>{offerSent} 人</span>
@@ -32,22 +32,14 @@ export default function OfferAcceptance() {
             <div style={{ ...barFillStyle, width: "100%", background: "#378ADD" }} />
           </div>
 
-          {/* 已錄取 */}
           <div style={{ ...rowStyle, marginTop: 10 }}>
             <span>已錄取</span>
             <span>{hired} 人</span>
           </div>
           <div style={barTrackStyle}>
-            <div
-              style={{
-                ...barFillStyle,
-                width: `${rate}%`,
-                background: "#1D9E75",
-              }}
-            />
+            <div style={{ ...barFillStyle, width: `${rate}%`, background: "#1D9E75" }} />
           </div>
 
-          {/* Target */}
           <div style={{ ...rowStyle, marginTop: 10 }}>
             <span>目標 ≥ {target}%</span>
             <span style={{ color: reached ? "#1D9E75" : "#E24B4A" }}>
