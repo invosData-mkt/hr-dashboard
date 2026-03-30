@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.local
+.env.production.local
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.firebase/
+.ruff_cache/
+service-account.json
+firebase-debug.log
+firebase-debug.*.log

@@ -1,0 +1,4 @@
+firebase-functions>=0.4.0
+notion-client>=2.2.0
+gspread>=6.0.0
+google-auth>=2.22.0
