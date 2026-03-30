@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FUNC_LABELS, MONTHLY, WEEKLY } from "../utils/constants";
-import { diffDays, fmtDate, getGranularity } from "../utils/dateHelpers";
+import { REF_DATE, diffDays, fmtDate, getGranularity } from "../utils/dateHelpers";
 
 export function useDashboardData() {
-  const [dateRange, setDateRange] = useState({ start: "2025-05-01", end: "2026-03-19" });
+  const [dateRange, setDateRange] = useState({ start: "2025-05-01", end: REF_DATE });
   const [activePreset, setActivePreset] = useState("全部");
   const [apiData, setApiData] = useState(null);
 

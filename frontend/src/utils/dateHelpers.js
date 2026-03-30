@@ -1,26 +1,45 @@
-// Reference date matching the demo snapshot
-export const REF_DATE = "2026-03-19";
+/** Today's date string (YYYY-MM-DD), computed once on page load. */
+export const REF_DATE = new Date().toISOString().slice(0, 10);
+
+function todayStr() {
+  return REF_DATE;
+}
+
+function monthStart() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
+}
+
+function lastMonth() {
+  const d = new Date();
+  d.setMonth(d.getMonth() - 1);
+  const y = d.getFullYear();
+  const m = d.getMonth(); // 0-indexed
+  const lastDay = new Date(y, m + 1, 0).getDate();
+  const mm = String(m + 1).padStart(2, "0");
+  return { start: `${y}-${mm}-01`, end: `${y}-${mm}-${lastDay}` };
+}
 
 export const DATE_PRESETS = [
-  { label: "本月", getRange: () => ({ start: "2026-03-01", end: REF_DATE }) },
-  { label: "上個月", getRange: () => ({ start: "2026-02-01", end: "2026-02-28" }) },
+  { label: "本月", getRange: () => ({ start: monthStart(), end: todayStr() }) },
+  { label: "上個月", getRange: () => lastMonth() },
   {
     label: "90 天",
     getRange: () => {
-      const d = new Date(REF_DATE);
+      const d = new Date();
       d.setDate(d.getDate() - 90);
-      return { start: d.toISOString().slice(0, 10), end: REF_DATE };
+      return { start: d.toISOString().slice(0, 10), end: todayStr() };
     },
   },
   {
     label: "180 天",
     getRange: () => {
-      const d = new Date(REF_DATE);
+      const d = new Date();
       d.setDate(d.getDate() - 180);
-      return { start: d.toISOString().slice(0, 10), end: REF_DATE };
+      return { start: d.toISOString().slice(0, 10), end: todayStr() };
     },
   },
-  { label: "全部", getRange: () => ({ start: "2025-05-01", end: REF_DATE }) },
+  { label: "全部", getRange: () => ({ start: "2025-05-01", end: todayStr() }) },
 ];
 
 /** Returns number of days between two date strings. */
