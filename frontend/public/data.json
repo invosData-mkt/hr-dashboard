@@ -1,27 +1,27 @@
 {
   "meta": {
-    "total_records": 1101,
-    "filtered_records": 1101,
+    "total_records": 807,
+    "filtered_records": 807,
     "date_range": {
       "start": "2025-05-01",
       "end": "2026-03-29"
     }
   },
   "kpi": {
-    "total_applicants": 1101,
-    "monthly_average": 100.1,
+    "total_applicants": 807,
+    "monthly_average": 73.4,
     "peak_month": "2026/03",
-    "peak_count": 444,
-    "top_job_category": "Other",
-    "top_job_category_count": 689,
+    "peak_count": 280,
+    "top_job_category": "PM",
+    "top_job_category_count": 214,
     "offer_acceptance_rate": 87.5,
     "avg_hire_days": 41.2,
-    "active_pipeline": 824
+    "active_pipeline": 530
   },
   "pipeline": [
     {
       "stage": "初步篩選",
-      "count": 768
+      "count": 474
     },
     {
       "stage": "HR 電話",
@@ -136,41 +136,48 @@
     },
     {
       "month": "2026/01",
-      "total": 19,
+      "total": 14,
       "by_category": {
         "RD": 3,
         "HR": 1,
-        "PM": 5,
-        "Other": 10
+        "PM": 7,
+        "AM": 1,
+        "Other": 2
       }
     },
     {
       "month": "2026/02",
-      "total": 284,
+      "total": 159,
       "by_category": {
-        "BizDev": 5,
-        "AM": 8,
-        "PM": 3,
-        "Other": 268
+        "BizDev": 9,
+        "AM": 11,
+        "PM": 48,
+        "Designer": 9,
+        "RD": 11,
+        "HR": 5,
+        "MKT": 5,
+        "Other": 61
       }
     },
     {
       "month": "2026/03",
-      "total": 444,
+      "total": 280,
       "by_category": {
-        "Designer": 9,
-        "AM": 7,
+        "Designer": 72,
+        "AM": 12,
         "DMKT": 1,
-        "MKT": 7,
-        "BizDev": 9,
-        "Other": 411
+        "MKT": 20,
+        "BizDev": 25,
+        "Other": 131,
+        "PM": 16,
+        "HR": 3
       }
     }
   ],
   "source_breakdown": [
     {
       "source": "104",
-      "count": 953
+      "count": 659
     },
     {
       "source": "LinkedIn",
@@ -195,44 +202,44 @@
   ],
   "job_category_breakdown": [
     {
-      "category": "Other",
-      "count": 689
+      "category": "PM",
+      "count": 214
     },
     {
-      "category": "PM",
-      "count": 151
+      "category": "Other",
+      "count": 194
     },
     {
       "category": "AM",
-      "count": 83
+      "count": 92
+    },
+    {
+      "category": "Designer",
+      "count": 81
     },
     {
       "category": "HR",
-      "count": 53
+      "count": 61
+    },
+    {
+      "category": "MKT",
+      "count": 57
     },
     {
       "category": "DMKT",
       "count": 43
     },
     {
-      "category": "MKT",
-      "count": 39
+      "category": "BizDev",
+      "count": 37
     },
     {
-      "category": "BizDev",
-      "count": 17
+      "category": "RD",
+      "count": 15
     },
     {
       "category": "DA",
       "count": 13
-    },
-    {
-      "category": "Designer",
-      "count": 9
-    },
-    {
-      "category": "RD",
-      "count": 4
     }
   ],
   "closed_reasons": [

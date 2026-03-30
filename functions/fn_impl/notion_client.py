@@ -123,8 +123,25 @@ def _query_with_retry(cursor=None, retries=3):
                 raise
 
 
+def _deduplicate(records: list) -> list:
+    """Remove duplicates by (name, apply_date). Keep the one with the furthest pipeline stage."""
+    stage_order = {s: i for i, s in enumerate([
+        "初步篩選", "HR 電話", "一面", "最終面試", "發出 Offer", "已錄取", "已結案",
+    ])}
+    seen = {}
+    for r in records:
+        key = (r["name"], r["apply_date"])
+        if key in seen:
+            existing = seen[key]
+            if stage_order.get(r["stage"], 0) > stage_order.get(existing["stage"], 0):
+                seen[key] = r
+        else:
+            seen[key] = r
+    return list(seen.values())
+
+
 def fetch_all_applicants() -> list[dict]:
-    """Query the Notion database with pagination, return normalised dicts."""
+    """Query the Notion database with pagination, return deduplicated normalised dicts."""
     results: list[dict] = []
     has_more = True
     cursor = None
@@ -138,4 +155,8 @@ def fetch_all_applicants() -> list[dict]:
         if has_more:
             time.sleep(0.3)
 
-    return results
+    deduped = _deduplicate(results)
+    if len(deduped) < len(results):
+        print(f"Deduplicated: {len(results)} → {len(deduped)} ({len(results) - len(deduped)} duplicates removed)")
+
+    return deduped
