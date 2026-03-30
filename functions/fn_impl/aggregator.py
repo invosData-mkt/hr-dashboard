@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from .config import CLOSED_STATUSES, PIPELINE_STAGES
@@ -64,6 +64,33 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         entry = monthly[month_key]
         trend.append({
             "month": month_key,
+            "total": entry["total"],
+            "by_category": dict(entry["by_category"]),
+        })
+
+    # ── Weekly trend (by apply_date, ISO week) ──
+    weekly: dict[str, dict] = defaultdict(lambda: {"total": 0, "by_category": defaultdict(int), "week_start": None})
+    for r in filtered:
+        d = _parse_date(r["apply_date"])
+        if d:
+            # Monday of the ISO week
+            week_start = d - timedelta(days=d.weekday())
+            key = week_start.isoformat()
+            weekly[key]["total"] += 1
+            cat = r.get("function", "") or "Other"
+            weekly[key]["by_category"][cat] += 1
+            if weekly[key]["week_start"] is None:
+                weekly[key]["week_start"] = week_start
+
+    trend_weekly = []
+    for wk_key in sorted(weekly):
+        entry = weekly[wk_key]
+        ws = entry["week_start"]
+        we = ws + timedelta(days=6)
+        trend_weekly.append({
+            "week_start": ws.isoformat(),
+            "week_end": we.isoformat(),
+            "label": f"{ws.month}/{ws.day}",
             "total": entry["total"],
             "by_category": dict(entry["by_category"]),
         })
@@ -143,6 +170,7 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         "kpi": kpi,
         "pipeline": pipeline,
         "trend": trend,
+        "trend_weekly": trend_weekly,
         "source_breakdown": source_breakdown,
         "job_category_breakdown": job_category_breakdown,
         "closed_reasons": closed_reasons,

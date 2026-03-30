@@ -177,6 +177,518 @@
       }
     }
   ],
+  "trend_weekly": [
+    {
+      "week_start": "2025-04-28",
+      "week_end": "2025-05-04",
+      "label": "4/28",
+      "total": 10,
+      "by_category": {
+        "PM": 4,
+        "HR": 6
+      }
+    },
+    {
+      "week_start": "2025-05-05",
+      "week_end": "2025-05-11",
+      "label": "5/5",
+      "total": 20,
+      "by_category": {
+        "HR": 1,
+        "AM": 8,
+        "PM": 11
+      }
+    },
+    {
+      "week_start": "2025-05-12",
+      "week_end": "2025-05-18",
+      "label": "5/12",
+      "total": 7,
+      "by_category": {
+        "DA": 1,
+        "AM": 4,
+        "HR": 1,
+        "MKT": 1
+      }
+    },
+    {
+      "week_start": "2025-05-19",
+      "week_end": "2025-05-25",
+      "label": "5/19",
+      "total": 28,
+      "by_category": {
+        "MKT": 11,
+        "PM": 10,
+        "AM": 5,
+        "BizDev": 2
+      }
+    },
+    {
+      "week_start": "2025-05-26",
+      "week_end": "2025-06-01",
+      "label": "5/26",
+      "total": 7,
+      "by_category": {
+        "DA": 1,
+        "PM": 1,
+        "MKT": 5
+      }
+    },
+    {
+      "week_start": "2025-06-02",
+      "week_end": "2025-06-08",
+      "label": "6/2",
+      "total": 3,
+      "by_category": {
+        "PM": 3
+      }
+    },
+    {
+      "week_start": "2025-06-09",
+      "week_end": "2025-06-15",
+      "label": "6/9",
+      "total": 5,
+      "by_category": {
+        "MKT": 5
+      }
+    },
+    {
+      "week_start": "2025-06-16",
+      "week_end": "2025-06-22",
+      "label": "6/16",
+      "total": 4,
+      "by_category": {
+        "AM": 2,
+        "HR": 1,
+        "PM": 1
+      }
+    },
+    {
+      "week_start": "2025-06-23",
+      "week_end": "2025-06-29",
+      "label": "6/23",
+      "total": 22,
+      "by_category": {
+        "DA": 8,
+        "AM": 12,
+        "HR": 2
+      }
+    },
+    {
+      "week_start": "2025-06-30",
+      "week_end": "2025-07-06",
+      "label": "6/30",
+      "total": 6,
+      "by_category": {
+        "AM": 2,
+        "HR": 1,
+        "PM": 3
+      }
+    },
+    {
+      "week_start": "2025-07-07",
+      "week_end": "2025-07-13",
+      "label": "7/7",
+      "total": 3,
+      "by_category": {
+        "DA": 3
+      }
+    },
+    {
+      "week_start": "2025-07-14",
+      "week_end": "2025-07-20",
+      "label": "7/14",
+      "total": 1,
+      "by_category": {
+        "PM": 1
+      }
+    },
+    {
+      "week_start": "2025-07-21",
+      "week_end": "2025-07-27",
+      "label": "7/21",
+      "total": 3,
+      "by_category": {
+        "HR": 3
+      }
+    },
+    {
+      "week_start": "2025-07-28",
+      "week_end": "2025-08-03",
+      "label": "7/28",
+      "total": 10,
+      "by_category": {
+        "MKT": 4,
+        "HR": 5,
+        "PM": 1
+      }
+    },
+    {
+      "week_start": "2025-08-04",
+      "week_end": "2025-08-10",
+      "label": "8/4",
+      "total": 13,
+      "by_category": {
+        "MKT": 3,
+        "DMKT": 4,
+        "PM": 6
+      }
+    },
+    {
+      "week_start": "2025-08-11",
+      "week_end": "2025-08-17",
+      "label": "8/11",
+      "total": 6,
+      "by_category": {
+        "PM": 5,
+        "MKT": 1
+      }
+    },
+    {
+      "week_start": "2025-08-18",
+      "week_end": "2025-08-24",
+      "label": "8/18",
+      "total": 9,
+      "by_category": {
+        "PM": 8,
+        "HR": 1
+      }
+    },
+    {
+      "week_start": "2025-08-25",
+      "week_end": "2025-08-31",
+      "label": "8/25",
+      "total": 5,
+      "by_category": {
+        "DMKT": 1,
+        "PM": 1,
+        "HR": 2,
+        "RD": 1
+      }
+    },
+    {
+      "week_start": "2025-09-01",
+      "week_end": "2025-09-07",
+      "label": "9/1",
+      "total": 4,
+      "by_category": {
+        "HR": 2,
+        "MKT": 1,
+        "PM": 1
+      }
+    },
+    {
+      "week_start": "2025-09-08",
+      "week_end": "2025-09-14",
+      "label": "9/8",
+      "total": 18,
+      "by_category": {
+        "PM": 10,
+        "AM": 3,
+        "HR": 3,
+        "DMKT": 2
+      }
+    },
+    {
+      "week_start": "2025-09-15",
+      "week_end": "2025-09-21",
+      "label": "9/15",
+      "total": 20,
+      "by_category": {
+        "PM": 7,
+        "DMKT": 8,
+        "AM": 3,
+        "HR": 2
+      }
+    },
+    {
+      "week_start": "2025-09-22",
+      "week_end": "2025-09-28",
+      "label": "9/22",
+      "total": 11,
+      "by_category": {
+        "HR": 5,
+        "AM": 3,
+        "DMKT": 2,
+        "MKT": 1
+      }
+    },
+    {
+      "week_start": "2025-09-29",
+      "week_end": "2025-10-05",
+      "label": "9/29",
+      "total": 22,
+      "by_category": {
+        "AM": 4,
+        "HR": 4,
+        "DMKT": 11,
+        "PM": 3
+      }
+    },
+    {
+      "week_start": "2025-10-06",
+      "week_end": "2025-10-12",
+      "label": "10/6",
+      "total": 7,
+      "by_category": {
+        "AM": 5,
+        "HR": 1,
+        "DMKT": 1
+      }
+    },
+    {
+      "week_start": "2025-10-13",
+      "week_end": "2025-10-19",
+      "label": "10/13",
+      "total": 14,
+      "by_category": {
+        "PM": 2,
+        "HR": 2,
+        "AM": 6,
+        "DMKT": 4
+      }
+    },
+    {
+      "week_start": "2025-10-20",
+      "week_end": "2025-10-26",
+      "label": "10/20",
+      "total": 7,
+      "by_category": {
+        "DMKT": 2,
+        "PM": 1,
+        "HR": 4
+      }
+    },
+    {
+      "week_start": "2025-10-27",
+      "week_end": "2025-11-02",
+      "label": "10/27",
+      "total": 21,
+      "by_category": {
+        "DMKT": 6,
+        "PM": 5,
+        "AM": 7,
+        "HR": 3
+      }
+    },
+    {
+      "week_start": "2025-11-03",
+      "week_end": "2025-11-09",
+      "label": "11/3",
+      "total": 13,
+      "by_category": {
+        "PM": 11,
+        "DMKT": 1,
+        "AM": 1
+      }
+    },
+    {
+      "week_start": "2025-11-10",
+      "week_end": "2025-11-16",
+      "label": "11/10",
+      "total": 43,
+      "by_category": {
+        "PM": 42,
+        "HR": 1
+      }
+    },
+    {
+      "week_start": "2025-11-17",
+      "week_end": "2025-11-23",
+      "label": "11/17",
+      "total": 4,
+      "by_category": {
+        "PM": 2,
+        "AM": 1,
+        "BizDev": 1
+      }
+    },
+    {
+      "week_start": "2025-11-24",
+      "week_end": "2025-11-30",
+      "label": "11/24",
+      "total": 4,
+      "by_category": {
+        "HR": 1,
+        "PM": 2,
+        "AM": 1
+      }
+    },
+    {
+      "week_start": "2025-12-01",
+      "week_end": "2025-12-07",
+      "label": "12/1",
+      "total": 2,
+      "by_category": {
+        "PM": 1,
+        "HR": 1
+      }
+    },
+    {
+      "week_start": "2025-12-08",
+      "week_end": "2025-12-14",
+      "label": "12/8",
+      "total": 1,
+      "by_category": {
+        "AM": 1
+      }
+    },
+    {
+      "week_start": "2025-12-15",
+      "week_end": "2025-12-21",
+      "label": "12/15",
+      "total": 1,
+      "by_category": {
+        "PM": 1
+      }
+    },
+    {
+      "week_start": "2026-01-19",
+      "week_end": "2026-01-25",
+      "label": "1/19",
+      "total": 6,
+      "by_category": {
+        "RD": 2,
+        "HR": 1,
+        "PM": 3
+      }
+    },
+    {
+      "week_start": "2026-01-26",
+      "week_end": "2026-02-01",
+      "label": "1/26",
+      "total": 9,
+      "by_category": {
+        "PM": 6,
+        "RD": 1,
+        "AM": 1,
+        "Other": 1
+      }
+    },
+    {
+      "week_start": "2026-02-02",
+      "week_end": "2026-02-08",
+      "label": "2/2",
+      "total": 50,
+      "by_category": {
+        "BizDev": 6,
+        "AM": 5,
+        "PM": 28,
+        "RD": 7,
+        "HR": 3,
+        "Other": 1
+      }
+    },
+    {
+      "week_start": "2026-02-09",
+      "week_end": "2026-02-15",
+      "label": "2/9",
+      "total": 35,
+      "by_category": {
+        "PM": 22,
+        "BizDev": 8,
+        "AM": 1,
+        "RD": 3,
+        "HR": 1
+      }
+    },
+    {
+      "week_start": "2026-02-16",
+      "week_end": "2026-02-22",
+      "label": "2/16",
+      "total": 13,
+      "by_category": {
+        "PM": 4,
+        "RD": 2,
+        "Designer": 5,
+        "AM": 1,
+        "MKT": 1
+      }
+    },
+    {
+      "week_start": "2026-02-23",
+      "week_end": "2026-03-01",
+      "label": "2/23",
+      "total": 63,
+      "by_category": {
+        "AM": 9,
+        "PM": 20,
+        "Designer": 16,
+        "RD": 7,
+        "HR": 2,
+        "MKT": 7,
+        "BizDev": 2
+      }
+    },
+    {
+      "week_start": "2026-03-02",
+      "week_end": "2026-03-08",
+      "label": "3/2",
+      "total": 55,
+      "by_category": {
+        "Designer": 27,
+        "AM": 4,
+        "PM": 14,
+        "MKT": 4,
+        "BizDev": 2,
+        "HR": 4
+      }
+    },
+    {
+      "week_start": "2026-03-09",
+      "week_end": "2026-03-15",
+      "label": "3/9",
+      "total": 67,
+      "by_category": {
+        "AM": 5,
+        "Designer": 38,
+        "PM": 5,
+        "Other": 5,
+        "BizDev": 6,
+        "MKT": 4,
+        "HR": 4
+      }
+    },
+    {
+      "week_start": "2026-03-16",
+      "week_end": "2026-03-22",
+      "label": "3/16",
+      "total": 84,
+      "by_category": {
+        "DMKT": 1,
+        "MKT": 10,
+        "BizDev": 13,
+        "Designer": 30,
+        "Other": 20,
+        "PM": 7,
+        "AM": 3
+      }
+    },
+    {
+      "week_start": "2026-03-23",
+      "week_end": "2026-03-29",
+      "label": "3/23",
+      "total": 71,
+      "by_category": {
+        "AM": 2,
+        "Other": 10,
+        "MKT": 16,
+        "Designer": 28,
+        "BizDev": 15
+      }
+    },
+    {
+      "week_start": "2026-03-30",
+      "week_end": "2026-04-05",
+      "label": "3/30",
+      "total": 3,
+      "by_category": {
+        "Other": 1,
+        "MKT": 1,
+        "AM": 1
+      }
+    }
+  ],
   "source_breakdown": [
     {
       "source": "104",

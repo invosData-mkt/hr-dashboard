@@ -42,35 +42,52 @@ function transformApiData(raw, dateRange) {
   const { start, end } = dateRange;
   const gran = start && end ? getGranularity(start, end) : "month";
 
-  // Filter trend by date range
-  let trend = raw.trend || [];
-  if (start || end) {
-    trend = trend.filter((t) => {
-      const monthStart = new Date(t.month.replace("/", "-") + "-01");
-      if (start && monthStart < new Date(new Date(start).getFullYear(), new Date(start).getMonth(), 1)) return false;
-      if (end && monthStart > new Date(end)) return false;
-      return true;
+  let periods, labels, totals;
+
+  if (gran === "week") {
+    // Use weekly trend data
+    let weekly = raw.trend_weekly || [];
+    if (start || end) {
+      weekly = weekly.filter((w) => {
+        if (start && w.week_end < start) return false;
+        if (end && w.week_start > end) return false;
+        return true;
+      });
+    }
+    periods = weekly;
+    labels = weekly.map((w) => w.label);
+    totals = weekly.map((w) => w.total);
+  } else {
+    // Use monthly trend data
+    let trend = raw.trend || [];
+    if (start || end) {
+      trend = trend.filter((t) => {
+        const monthStart = new Date(t.month.replace("/", "-") + "-01");
+        if (start && monthStart < new Date(new Date(start).getFullYear(), new Date(start).getMonth(), 1)) return false;
+        if (end && monthStart > new Date(end)) return false;
+        return true;
+      });
+    }
+    periods = trend;
+    labels = trend.map((t) => {
+      const parts = t.month.split("/");
+      return parts[0].slice(2) + "/" + parts[1];
     });
+    totals = trend.map((t) => t.total);
   }
 
-  // Compute from trend
-  const totals = trend.map((t) => t.total);
+  // Compute from periods
   const grandTotal = totals.reduce((a, b) => a + b, 0);
-  const nPeriods = trend.length || 1;
+  const nPeriods = periods.length || 1;
   const avg = +(grandTotal / nPeriods).toFixed(1);
-
-  const labels = trend.map((t) => {
-    const parts = t.month.split("/");
-    return parts[0].slice(2) + "/" + parts[1];
-  });
 
   const peakIdx = totals.length ? totals.indexOf(Math.max(...totals)) : -1;
   const peakLabel = peakIdx >= 0 ? labels[peakIdx] : "—";
   const peakVal = peakIdx >= 0 ? totals[peakIdx] : 0;
 
-  // Aggregate func totals from trend
+  // Aggregate func totals from periods
   const funcMap = {};
-  trend.forEach((t) => {
+  periods.forEach((t) => {
     Object.entries(t.by_category || {}).forEach(([k, v]) => {
       funcMap[k] = (funcMap[k] || 0) + v;
     });
@@ -84,7 +101,7 @@ function transformApiData(raw, dateRange) {
 
   // Trend chart data
   const topKeys = allFuncKeys.slice(0, 6);
-  const trendData = trend.map((t, i) => {
+  const trendData = periods.map((t, i) => {
     const entry = { label: labels[i], total: t.total };
     topKeys.forEach((k) => {
       entry[k] = (t.by_category && t.by_category[k]) || 0;
