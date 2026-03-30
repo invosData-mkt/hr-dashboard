@@ -10,10 +10,12 @@ from .config import (
     FUNCTION_TO_ABBR,
     NOTION_DB_ID,
     NOTION_TOKEN,
+    POSITION_TO_ABBR,
     PROP_APPLY_DATE,
     PROP_FUNCTION,
     PROP_NAME,
     PROP_ONBOARD_DATE,
+    PROP_POSITION,
     PROP_SOURCE,
     PROP_STATUS,
     STATUS_TO_STAGE,
@@ -21,6 +23,9 @@ from .config import (
 
 _NOTION_API = "https://api.notion.com/v1"
 _NOTION_VERSION = "2022-06-28"
+
+# Cache for resolved relation page titles (page_id -> title string)
+_relation_cache: dict = {}
 
 
 def _headers():
@@ -69,6 +74,49 @@ def _parse_chinese_date(s: str) -> str:
     return ""
 
 
+def _resolve_relation_title(page_id: str) -> str:
+    """Fetch a related page's title, with caching."""
+    if page_id in _relation_cache:
+        return _relation_cache[page_id]
+    try:
+        with httpx.Client(timeout=30) as client:
+            resp = client.get(
+                f"{_NOTION_API}/pages/{page_id}",
+                headers=_headers(),
+            )
+            resp.raise_for_status()
+            props = resp.json().get("properties", {})
+            for pval in props.values():
+                if pval.get("type") == "title":
+                    parts = pval.get("title", [])
+                    title = parts[0]["plain_text"] if parts else ""
+                    _relation_cache[page_id] = title
+                    return title
+    except Exception:
+        pass
+    _relation_cache[page_id] = ""
+    return ""
+
+
+def _resolve_position(props: dict) -> str:
+    """Resolve 應徵職位 relation → position name → abbreviation. Returns '' if unavailable."""
+    pos_prop = props.get(PROP_POSITION, {})
+    if pos_prop.get("type") != "relation":
+        return ""
+    rels = pos_prop.get("relation", [])
+    if not rels:
+        return ""
+    page_id = rels[0].get("id", "")
+    if not page_id:
+        return ""
+    title = _resolve_relation_title(page_id)
+    if not title:
+        return ""
+    # Try exact match first, then stripped match
+    abbr = POSITION_TO_ABBR.get(title) or POSITION_TO_ABBR.get(title.strip())
+    return abbr or ""
+
+
 def _parse_page(page: dict) -> dict:
     props = page.get("properties", {})
 
@@ -76,8 +124,11 @@ def _parse_page(page: dict) -> dict:
     stage = STATUS_TO_STAGE.get(raw_status, "")
     closed_reason = raw_status if raw_status in CLOSED_STATUSES else ""
 
-    raw_func = _extract_text(props.get(PROP_FUNCTION, {}))
-    func_abbr = FUNCTION_TO_ABBR.get(raw_func, raw_func or "Other")
+    # Priority: 應徵職位 relation → Function rollup → "Other"
+    func_abbr = _resolve_position(props)
+    if not func_abbr:
+        raw_func = _extract_text(props.get(PROP_FUNCTION, {}))
+        func_abbr = FUNCTION_TO_ABBR.get(raw_func, raw_func or "Other")
 
     # apply_date: use 收件日期, fallback to Created time, then page created_time
     apply_date = _extract_text(props.get(PROP_APPLY_DATE, {}))
