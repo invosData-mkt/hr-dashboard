@@ -58,3 +58,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Send failure notification
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "[HR Dashboard] ⚠ 同步失敗 - ${{ github.event.repository.updated_at }}"
+          html_body: |
+            <html><body style="font-family: Arial, sans-serif; color: #333;">
+            <h2>HR Dashboard 同步失敗通知</h2>
+            <p><strong>狀態：</strong>✗ 失敗</p>
+            <p>請檢查 GitHub Actions：</p>
+            <p><a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">
+              https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            </a></p>
+            </body></html>
+          from: ${{ secrets.GMAIL_USER }}
+          to: iriswei@ezprice.com.tw, sam.cheng@invos.com.tw

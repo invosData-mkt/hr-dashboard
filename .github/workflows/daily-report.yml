@@ -1,0 +1,77 @@
+name: Daily Sync Report
+
+on:
+  schedule:
+    - cron: "0 1 * * *"   # UTC 1:00 = 台北 09:00
+  workflow_dispatch:        # 手動觸發
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python deps
+        run: pip install httpx
+
+      - name: Fetch Notion data
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python scripts/generate_data.py
+
+      - name: Generate email body
+        id: email
+        run: |
+          python - <<'PYEOF'
+          import json, os
+
+          with open("sync_report.json", encoding="utf-8") as f:
+              r = json.load(f)
+
+          pipeline = r["pipeline"]
+          stages = ["初步篩選", "HR 電話", "一面", "最終面試", "發出 Offer", "已錄取", "已結案"]
+          pipeline_text = " | ".join(f"{s} {pipeline.get(s, 0)}" for s in stages)
+
+          date_str = r["sync_time"][:10].replace("-", "/")
+          subject = f"[HR Dashboard] 每日同步報告 - {date_str} ✓"
+
+          body = f"""<html><body style="font-family: Arial, sans-serif; color: #333;">
+          <h2>HR Dashboard 每日同步報告</h2>
+          <p><strong>同步時間：</strong>{r['sync_time']} (UTC+8)</p>
+          <p><strong>狀態：</strong>✓ 成功</p>
+          <hr/>
+          <h3>📊 資料摘要</h3>
+          <ul>
+            <li><strong>總筆數（去重後）：</strong>{r['filtered_records']}</li>
+            <li><strong>日期範圍：</strong>{r['date_range_start'] or 'N/A'} ~ {r['date_range_end'] or 'N/A'}</li>
+            <li><strong>Pipeline：</strong>{pipeline_text}</li>
+            <li><strong>本月新增：</strong>{r['new_this_month']} 筆</li>
+            <li><strong>Offer 接受率：</strong>{r['offer_acceptance_rate']}%</li>
+          </ul>
+          <hr/>
+          <p>Dashboard: <a href="https://invosdata-mkt.github.io/hr-dashboard/">https://invosdata-mkt.github.io/hr-dashboard/</a></p>
+          </body></html>"""
+
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              # Use delimiter for multiline output
+              out.write(f"subject<<EOFSUBJECT\n{subject}\nEOFSUBJECT\n")
+              out.write(f"body<<EOFBODY\n{body}\nEOFBODY\n")
+          PYEOF
+
+      - name: Send daily report email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: ${{ steps.email.outputs.subject }}
+          html_body: ${{ steps.email.outputs.body }}
+          from: ${{ secrets.GMAIL_USER }}
+          to: iriswei@ezprice.com.tw, sam.cheng@invos.com.tw
