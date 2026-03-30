@@ -42,9 +42,20 @@ def _extract_text(prop: dict) -> str:
     if ptype == "select":
         sel = prop.get("select")
         return sel["name"] if sel else ""
+    if ptype == "status":
+        sel = prop.get("status")
+        return sel["name"] if sel else ""
     if ptype == "date":
         d = prop.get("date")
         return d["start"] if d else ""
+    if ptype == "created_time":
+        return (prop.get("created_time") or "")[:10]
+    if ptype == "rollup":
+        arr = prop.get("rollup", {}).get("array", [])
+        if arr and arr[0].get("type") == "select":
+            sel = arr[0].get("select")
+            return sel["name"] if sel else ""
+        return ""
     return ""
 
 
@@ -68,11 +79,16 @@ def _parse_page(page: dict) -> dict:
     raw_func = _extract_text(props.get(PROP_FUNCTION, {}))
     func_abbr = FUNCTION_TO_ABBR.get(raw_func, raw_func or "Other")
 
-    # apply_date: use 收件日期, fallback to Created time (Chinese format)
+    # apply_date: use 收件日期, fallback to Created time, then page created_time
     apply_date = _extract_text(props.get(PROP_APPLY_DATE, {}))
     if not apply_date:
-        created_time_text = _extract_text(props.get("Created time", {}))
-        apply_date = _parse_chinese_date(created_time_text)
+        ct = _extract_text(props.get("Created time", {}))
+        if ct and re.match(r"\d{4}-\d{2}-\d{2}", ct):
+            apply_date = ct[:10]
+        else:
+            apply_date = _parse_chinese_date(ct)
+    if not apply_date:
+        apply_date = (page.get("created_time") or "")[:10]
 
     return {
         "name": _extract_text(props.get(PROP_NAME, {})),
