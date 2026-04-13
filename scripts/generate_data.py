@@ -29,6 +29,12 @@ def main():
     print("Aggregating...")
     data = aggregate(records)
 
+    # Stamp generation time (Asia/Taipei) into meta so frontend can show freshness
+    utc8 = timezone(timedelta(hours=8))
+    data.setdefault("meta", {})["generated_at"] = datetime.now(utc8).strftime(
+        "%Y-%m-%d %H:%M"
+    )
+
     out_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "data.json")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 

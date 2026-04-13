@@ -2,6 +2,7 @@ export default function Header({ meta }) {
   const total = meta?.total_records ?? 394;
   const start = meta?.date_range?.start?.slice(0, 7).replace("-", "/") ?? "2025/05";
   const end = meta?.date_range?.end?.slice(0, 7).replace("-", "/") ?? "2026/03";
+  const generatedAt = meta?.generated_at;
 
   return (
     <header
@@ -21,6 +22,7 @@ export default function Header({ meta }) {
         <h1 style={{ fontSize: 15, fontWeight: 600 }}>HR Recruitment Dashboard</h1>
         <p style={{ fontSize: 11, color: "#888", marginTop: 1 }}>
           資料來源：Notion API　｜　總筆數：{total}　｜　{start} — {end}
+          {generatedAt && `　｜　更新於 ${generatedAt}`}
         </p>
       </div>
     </header>

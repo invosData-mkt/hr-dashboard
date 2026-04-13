@@ -16,7 +16,8 @@ REGION = "asia-east1"
 
 
 @scheduler_fn.on_schedule(
-    schedule="every 6 hours",
+    schedule="30 8 * * *",
+    timezone=scheduler_fn.Timezone("Asia/Taipei"),
     region=REGION,
 )
 def sync_notion_to_sheets(event: scheduler_fn.ScheduledEvent) -> None:

@@ -2,7 +2,7 @@ name: Sync Notion & Deploy
 
 on:
   schedule:
-    - cron: "0 2,8,14,20 * * *"   # 每 6 小時 (UTC 2,8,14,20 = 台北 10,16,22,04)
+    - cron: "30 0 * * *"          # 每日一次 (UTC 00:30 = 台北 08:30)
   workflow_dispatch:                # 手動觸發
 
 permissions:
