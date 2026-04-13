@@ -1,4 +1,4 @@
-import { DATE_PRESETS } from "../utils/dateHelpers";
+import { DATE_PRESETS, REF_DATE } from "../utils/dateHelpers";
 
 export default function FilterBar({
   activePreset,
@@ -57,7 +57,7 @@ export default function FilterBar({
           type="date"
           value={dateRange.start}
           min="2025-05-01"
-          max="2026-03-19"
+          max={REF_DATE}
           onChange={(e) => onCustomRange(e.target.value, dateRange.end)}
           style={dateInputStyle}
         />
@@ -67,7 +67,7 @@ export default function FilterBar({
           type="date"
           value={dateRange.end}
           min="2025-05-01"
-          max="2026-03-19"
+          max={REF_DATE}
           onChange={(e) => onCustomRange(dateRange.start, e.target.value)}
           style={dateInputStyle}
         />
