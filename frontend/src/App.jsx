@@ -21,6 +21,7 @@ export default function App() {
         activePreset={activePreset}
         dateRange={dateRange}
         granularity={data?.gran || "month"}
+        meta={data?.meta}
         onPreset={setPreset}
         onCustomRange={setCustomRange}
       />

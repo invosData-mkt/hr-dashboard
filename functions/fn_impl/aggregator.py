@@ -95,6 +95,26 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
             "by_category": dict(entry["by_category"]),
         })
 
+    # ── Daily trend (by apply_date) ──
+    daily: dict[str, dict] = defaultdict(lambda: {"total": 0, "by_category": defaultdict(int)})
+    for r in filtered:
+        d = _parse_date(r["apply_date"])
+        if d:
+            key = d.isoformat()  # "YYYY-MM-DD"
+            daily[key]["total"] += 1
+            cat = r.get("function", "") or "Other"
+            daily[key]["by_category"][cat] += 1
+
+    trend_daily = [
+        {
+            "date": k,
+            "label": f"{int(k[5:7])}/{int(k[8:10])}",  # "4/13"
+            "total": v["total"],
+            "by_category": dict(v["by_category"]),
+        }
+        for k, v in sorted(daily.items())
+    ]
+
     # ── Source breakdown ──
     source_counter = Counter(r["source"] for r in filtered if r["source"])
     source_breakdown = [
@@ -171,6 +191,7 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         "pipeline": pipeline,
         "trend": trend,
         "trend_weekly": trend_weekly,
+        "trend_daily": trend_daily,
         "source_breakdown": source_breakdown,
         "job_category_breakdown": job_category_breakdown,
         "closed_reasons": closed_reasons,

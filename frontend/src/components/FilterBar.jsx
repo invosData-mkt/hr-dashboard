@@ -1,13 +1,21 @@
-import { DATE_PRESETS, REF_DATE } from "../utils/dateHelpers";
+import { DATA_MIN_FALLBACK, DATE_PRESETS, REF_DATE } from "../utils/dateHelpers";
+
+const GRAN_LABEL = {
+  day: "📅 依日顯示",
+  week: "📅 依週顯示",
+  month: "📅 依月顯示",
+};
 
 export default function FilterBar({
   activePreset,
   dateRange,
   granularity,
+  meta,
   onPreset,
   onCustomRange,
 }) {
-  const granLabel = granularity === "month" ? "📅 依月顯示" : "📅 依週顯示";
+  const granLabel = GRAN_LABEL[granularity] || GRAN_LABEL.month;
+  const dataMin = meta?.date_range?.start || DATA_MIN_FALLBACK;
 
   return (
     <div
@@ -25,11 +33,11 @@ export default function FilterBar({
       }}
     >
       {/* Presets */}
-      <div style={{ display: "flex", gap: 5 }}>
+      <div style={{ display: "flex", gap: 5, flexWrap: "wrap" }}>
         {DATE_PRESETS.map((p) => (
           <button
             key={p.label}
-            onClick={() => onPreset(p.label, p.getRange())}
+            onClick={() => onPreset(p.label, p.getRange(dataMin))}
             style={{
               padding: "5px 12px",
               borderRadius: 20,
@@ -56,7 +64,7 @@ export default function FilterBar({
         <input
           type="date"
           value={dateRange.start}
-          min="2025-05-01"
+          min={dataMin}
           max={REF_DATE}
           onChange={(e) => onCustomRange(e.target.value, dateRange.end)}
           style={dateInputStyle}
@@ -66,7 +74,7 @@ export default function FilterBar({
         <input
           type="date"
           value={dateRange.end}
-          min="2025-05-01"
+          min={dataMin}
           max={REF_DATE}
           onChange={(e) => onCustomRange(dateRange.start, e.target.value)}
           style={dateInputStyle}
