@@ -145,7 +145,7 @@ function transformApiData(raw, dateRange) {
 
   return {
     gran,
-    grandTotal: grandTotal || kpi.total_applicants || 0,
+    grandTotal,
     nPeriods,
     avg,
     peakLabel,
