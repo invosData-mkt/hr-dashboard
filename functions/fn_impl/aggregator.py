@@ -229,6 +229,18 @@ _OFFER_STAGES = {"Send Offer", "Accepted"}
 _ACCEPTED_STAGE = "Accepted"
 _APPLIED_STAGE = "Applied"
 
+# A position is "active" only if at least one candidate is currently in one of
+# these interviewing stages. Applied (= 初篩未過) and Accepted (= filled) both
+# count as closed, alongside the explicit reject/pending statuses.
+_ACTIVELY_INTERVIEWING = {
+    "In Review",
+    "Phone Screen",
+    "First Interview",
+    "Take home assignment",
+    "Final interview",
+    "Send Offer",
+}
+
 
 def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dict]:
     """Group records by 應徵職位 and emit one card per active position.
@@ -251,7 +263,7 @@ def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dic
     out: list[dict] = []
     for title, recs in by_position.items():
         stages_now = [r.get("stage", "") for r in recs]
-        if not any(s and s not in CLOSED_STATUSES for s in stages_now):
+        if not any(s in _ACTIVELY_INTERVIEWING for s in stages_now):
             continue
 
         total = len(recs)
