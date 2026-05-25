@@ -33,9 +33,10 @@ def write_to_sheets(data: dict) -> None:
 
     # ── Pipeline Summary ──
     ws = _ensure_worksheet(sh, "Pipeline Summary")
-    rows = [["階段", "人數"]]
-    for item in data["pipeline"]:
-        rows.append([item["stage"], item["count"]])
+    rows = [["分組", "階段", "人數"]]
+    for group in data["pipeline"]:
+        for s in group.get("stages", []):
+            rows.append([group.get("group", ""), s["stage"], s["count"]])
     ws.clear()
     ws.update(range_name="A1", values=rows)
 

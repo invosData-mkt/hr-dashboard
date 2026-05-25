@@ -31,16 +31,20 @@ export const FUNC_LABELS = {
   Marcom2C: "行銷 2C",
 };
 
-// ── Pipeline snapshot (static, not affected by date filter) ──
-export const PIPELINE_SNAPSHOT = [
-  { stage: "初步篩選", count: 66, color: "#639922", barColor: "#C0DD97" },
-  { stage: "HR 電話", count: 14, color: "#378ADD", barColor: "#85B7EB" },
-  { stage: "一面", count: 11, color: "#7F77DD", barColor: "#AFA9EC" },
-  { stage: "最終面試", count: 6, color: "#D85A30", barColor: "#F0997B" },
-  { stage: "發出 Offer", count: 2, color: "#993C1D", barColor: "#F5C4B3" },
-  { stage: "已錄取", count: 14, color: "#1D9E75", barColor: "#5DCAA5" },
-  { stage: "已結案", count: 281, color: "#888", barColor: "#D3D1C7" },
-];
+// ── Notion option colors → CSS (text/dot color + bar background) ──
+// Mirrors Notion's official palette. Used to render dynamic pipeline stages.
+export const NOTION_COLOR_MAP = {
+  default: { color: "#787774", barColor: "#E3E2E0" },
+  gray:    { color: "#787774", barColor: "#E3E2E0" },
+  brown:   { color: "#9F6B53", barColor: "#EAE4E0" },
+  orange:  { color: "#D9730D", barColor: "#FAEBDD" },
+  yellow:  { color: "#CB912F", barColor: "#FBF3DB" },
+  green:   { color: "#448361", barColor: "#DDEDE3" },
+  blue:    { color: "#337EA9", barColor: "#DDEBF1" },
+  purple:  { color: "#9065B0", barColor: "#EAE4F2" },
+  pink:    { color: "#C14C8A", barColor: "#F4DFEB" },
+  red:     { color: "#D44C47", barColor: "#FBE4E4" },
+};
 
 // ── Source breakdown (static) ──
 export const SOURCE_DATA = [

@@ -18,7 +18,6 @@ from .config import (
     PROP_POSITION,
     PROP_SOURCE,
     PROP_STATUS,
-    STATUS_TO_STAGE,
 )
 
 _NOTION_API = "https://api.notion.com/v1"
@@ -98,34 +97,33 @@ def _resolve_relation_title(page_id: str) -> str:
     return ""
 
 
-def _resolve_position(props: dict) -> str:
-    """Resolve 應徵職位 relation → position name → abbreviation. Returns '' if unavailable."""
+def _resolve_position(props: dict) -> tuple[str, str]:
+    """Resolve 應徵職位 relation → (full title, abbreviation). Returns ("", "") if unavailable."""
     pos_prop = props.get(PROP_POSITION, {})
     if pos_prop.get("type") != "relation":
-        return ""
+        return "", ""
     rels = pos_prop.get("relation", [])
     if not rels:
-        return ""
+        return "", ""
     page_id = rels[0].get("id", "")
     if not page_id:
-        return ""
+        return "", ""
     title = _resolve_relation_title(page_id)
     if not title:
-        return ""
-    # Try exact match first, then stripped match
-    abbr = POSITION_TO_ABBR.get(title) or POSITION_TO_ABBR.get(title.strip())
-    return abbr or ""
+        return "", ""
+    abbr = POSITION_TO_ABBR.get(title) or POSITION_TO_ABBR.get(title.strip()) or ""
+    return title.strip(), abbr
 
 
 def _parse_page(page: dict) -> dict:
     props = page.get("properties", {})
 
     raw_status = _extract_text(props.get(PROP_STATUS, {}))
-    stage = STATUS_TO_STAGE.get(raw_status, "")
+    stage = raw_status
     closed_reason = raw_status if raw_status in CLOSED_STATUSES else ""
 
     # Priority: 應徵職位 relation → Function rollup → "Other"
-    func_abbr = _resolve_position(props)
+    position_title, func_abbr = _resolve_position(props)
     if not func_abbr:
         raw_func = _extract_text(props.get(PROP_FUNCTION, {}))
         func_abbr = FUNCTION_TO_ABBR.get(raw_func, raw_func or "Other")
@@ -149,6 +147,7 @@ def _parse_page(page: dict) -> dict:
         "apply_date": apply_date,
         "source": _extract_text(props.get(PROP_SOURCE, {})),
         "function": func_abbr,
+        "position_title": position_title,
         "onboard_date": _extract_text(props.get(PROP_ONBOARD_DATE, {})),
     }
 
@@ -174,11 +173,8 @@ def _query_with_retry(cursor=None, retries=3):
                 raise
 
 
-def _deduplicate(records: list) -> list:
+def _deduplicate(records: list, stage_order: dict[str, int]) -> list:
     """Remove duplicates by (name, apply_date). Keep the one with the furthest pipeline stage."""
-    stage_order = {s: i for i, s in enumerate([
-        "初步篩選", "HR 電話", "一面", "最終面試", "發出 Offer", "已錄取", "已結案",
-    ])}
     seen = {}
     for r in records:
         key = (r["name"], r["apply_date"])
@@ -191,8 +187,61 @@ def _deduplicate(records: list) -> list:
     return list(seen.values())
 
 
-def fetch_all_applicants() -> list[dict]:
-    """Query the Notion database with pagination, return deduplicated normalised dicts."""
+def fetch_status_schema() -> list[dict]:
+    """Fetch the Notion DB schema for PROP_STATUS and return its groups in order.
+
+    Returns a list of group dicts:
+        [{"name": "In progress", "color": "blue",
+          "options": [{"name": "Phone Screen", "color": "brown"}, ...]},
+         ...]
+
+    Options inside each group preserve Notion's option ordering.
+    Returns [] if the property is missing or the request fails.
+    """
+    try:
+        with httpx.Client(timeout=30) as client:
+            resp = client.get(
+                f"{_NOTION_API}/databases/{NOTION_DB_ID}",
+                headers=_headers(),
+            )
+            resp.raise_for_status()
+            schema = resp.json()
+    except Exception as e:
+        print(f"fetch_status_schema failed: {e}")
+        return []
+
+    prop = schema.get("properties", {}).get(PROP_STATUS, {})
+    ptype = prop.get("type")
+    body = prop.get(ptype, {}) if ptype in ("status", "select") else {}
+
+    options = body.get("options", []) or []
+    option_by_id = {o["id"]: o for o in options}
+
+    groups = body.get("groups")
+    if groups:
+        out = []
+        for g in groups:
+            opts = [option_by_id[oid] for oid in g.get("option_ids", []) if oid in option_by_id]
+            out.append({
+                "name": g.get("name", ""),
+                "color": g.get("color", "default"),
+                "options": [{"name": o.get("name", ""), "color": o.get("color", "default")} for o in opts],
+            })
+        return out
+
+    # Select properties have no groups — return a single synthetic group.
+    return [{
+        "name": "",
+        "color": "default",
+        "options": [{"name": o.get("name", ""), "color": o.get("color", "default")} for o in options],
+    }]
+
+
+def fetch_all_applicants(stage_order: dict[str, int] | None = None) -> list[dict]:
+    """Query the Notion database with pagination, return deduplicated normalised dicts.
+
+    stage_order maps stage name → position; used to pick the furthest stage on dedupe.
+    """
     results: list[dict] = []
     has_more = True
     cursor = None
@@ -206,7 +255,7 @@ def fetch_all_applicants() -> list[dict]:
         if has_more:
             time.sleep(0.3)
 
-    deduped = _deduplicate(results)
+    deduped = _deduplicate(results, stage_order or {})
     if len(deduped) < len(results):
         print(f"Deduplicated: {len(results)} → {len(deduped)} ({len(results) - len(deduped)} duplicates removed)")
 

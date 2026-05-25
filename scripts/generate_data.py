@@ -19,15 +19,30 @@ if os.path.exists(env_path):
                 os.environ[k.strip()] = v.strip()
 
 from fn_impl.aggregator import aggregate
-from fn_impl.notion_client import fetch_all_applicants
+from fn_impl.notion_client import fetch_all_applicants, fetch_status_schema
+
+
+def _stage_order(groups):
+    order = {}
+    i = 0
+    for g in groups:
+        for o in g.get("options", []):
+            order[o["name"]] = i
+            i += 1
+    return order
+
 
 def main():
-    print("Fetching from Notion...")
-    records = fetch_all_applicants()
+    print("Fetching Notion status schema...")
+    groups = fetch_status_schema()
+    print(f"Found {sum(len(g.get('options', [])) for g in groups)} stages across {len(groups)} groups")
+
+    print("Fetching applicants from Notion...")
+    records = fetch_all_applicants(_stage_order(groups))
     print(f"Fetched {len(records)} records")
 
     print("Aggregating...")
-    data = aggregate(records)
+    data = aggregate(records, status_groups=groups)
 
     # Stamp generation time (Asia/Taipei) into meta so frontend can show freshness
     utc8 = timezone(timedelta(hours=8))
@@ -43,7 +58,10 @@ def main():
 
     print(f"Written to {out_path}")
     print(f"  total_records: {data['meta']['total_records']}")
-    print(f"  pipeline: {[p['count'] for p in data['pipeline']]}")
+    for g in data["pipeline"]:
+        counts = [s["count"] for s in g.get("stages", [])]
+        print(f"  pipeline [{g.get('group', '')}]: {counts}")
+    print(f"  positions (active): {len(data.get('positions', []))}")
     print(f"  trend months: {len(data['trend'])}")
 
     # ── Generate sync_report.json for email notification ──
@@ -58,8 +76,12 @@ def main():
             new_this_month = t["total"]
             break
 
-    # Build pipeline summary dict
-    pipeline_summary = {p["stage"]: p["count"] for p in data["pipeline"]}
+    # Build pipeline summary dict (flatten groups → {stage: count})
+    pipeline_summary = {
+        s["stage"]: s["count"]
+        for g in data["pipeline"]
+        for s in g.get("stages", [])
+    }
 
     report = {
         "sync_time": now_tpe.strftime("%Y-%m-%d %H:%M"),

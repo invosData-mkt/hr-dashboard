@@ -9,8 +9,19 @@ import json
 from firebase_functions import https_fn, options, scheduler_fn
 
 from fn_impl.aggregator import aggregate
-from fn_impl.notion_client import fetch_all_applicants
+from fn_impl.notion_client import fetch_all_applicants, fetch_status_schema
 from fn_impl.sheets_writer import write_to_sheets
+
+
+def _stage_order(groups: list[dict]) -> dict[str, int]:
+    """Flatten grouped schema into {stage_name: index} for dedupe ordering."""
+    order: dict[str, int] = {}
+    i = 0
+    for g in groups:
+        for o in g.get("options", []):
+            order[o["name"]] = i
+            i += 1
+    return order
 
 REGION = "asia-east1"
 
@@ -22,8 +33,9 @@ REGION = "asia-east1"
 )
 def sync_notion_to_sheets(event: scheduler_fn.ScheduledEvent) -> None:
     """Fetch all applicants from Notion, aggregate, and write to Google Sheets."""
-    records = fetch_all_applicants()
-    data = aggregate(records)
+    groups = fetch_status_schema()
+    records = fetch_all_applicants(_stage_order(groups))
+    data = aggregate(records, status_groups=groups)
     write_to_sheets(data)
     print(f"Synced {len(records)} records to Google Sheets.")
 
@@ -42,8 +54,9 @@ def dashboard_data(req: https_fn.Request) -> https_fn.Response:
     start = req.args.get("start", "")
     end = req.args.get("end", "")
 
-    records = fetch_all_applicants()
-    data = aggregate(records, start=start, end=end)
+    groups = fetch_status_schema()
+    records = fetch_all_applicants(_stage_order(groups))
+    data = aggregate(records, start=start, end=end, status_groups=groups)
 
     return https_fn.Response(
         json.dumps(data, ensure_ascii=False),

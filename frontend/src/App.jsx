@@ -5,6 +5,7 @@ import JobCategoryDonut from "./components/JobCategoryDonut";
 import KpiCards from "./components/KpiCards";
 import OfferAcceptance from "./components/OfferAcceptance";
 import PipelineFunnel from "./components/PipelineFunnel";
+import PositionPipelines from "./components/PositionPipelines";
 import SourceDonut from "./components/SourceDonut";
 import TrendChart from "./components/TrendChart";
 import { useDashboardData } from "./hooks/useDashboardData";
@@ -44,6 +45,10 @@ export default function App() {
         {/* 整體 Pipeline */}
         <SectionTitle>整體 Pipeline（當前快照）</SectionTitle>
         <PipelineFunnel pipeline={data?.pipeline} />
+
+        {/* 職位 Pipeline */}
+        <SectionTitle>職位 Pipeline（進行中）</SectionTitle>
+        <PositionPipelines positions={data?.positions} />
 
         {/* 結案原因 + Offer 接受率 */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
