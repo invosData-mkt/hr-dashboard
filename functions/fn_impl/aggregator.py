@@ -225,27 +225,21 @@ def aggregate(
     }
 
 
+_OFFER_STAGES = {"Send Offer", "Accepted"}
+_ACCEPTED_STAGE = "Accepted"
+_APPLIED_STAGE = "Applied"
+
+
 def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dict]:
     """Group records by 應徵職位 and emit one card per active position.
 
-    Funnel buckets are mutually-exclusive — every applicant lands in exactly one
-    bucket matching their current Notion status. Bucket order follows the Notion
-    schema (status_groups).
+    Funnel is cumulative — counts how many candidates *ever reached* each stage,
+    inferred from per-stage date fields where available and current status as
+    fallback for stages without date fields.
 
     "Active" = the position has at least one applicant whose stage is not a
     closed-bucket status (Rejected / Candidate Rejected / Pending response).
     """
-    # Flatten schema → ordered list of {name, color, group, group_color}
-    bucket_defs: list[dict] = []
-    for g in status_groups:
-        for o in g.get("options", []):
-            bucket_defs.append({
-                "stage": o["name"],
-                "color": o.get("color", "default"),
-                "group": g.get("name", ""),
-                "group_color": g.get("color", "default"),
-            })
-
     by_position: dict[str, list[dict]] = defaultdict(list)
     for r in records:
         title = r.get("position_title", "")
@@ -256,14 +250,36 @@ def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dic
     today = date.today()
     out: list[dict] = []
     for title, recs in by_position.items():
-        stages_now = [r["stage"] for r in recs if r.get("stage")]
+        stages_now = [r.get("stage", "") for r in recs]
         if not any(s and s not in CLOSED_STATUSES for s in stages_now):
-            continue  # skip positions with no active candidates
+            continue
+
+        total = len(recs)
+        applied_count = sum(1 for s in stages_now if s == _APPLIED_STAGE)
+
+        has_date = lambda key: sum(1 for r in recs if r.get(key))
+        phone_n = has_date("phone_screen_date")
+        first_n = has_date("first_interview_date")
+        final_n = has_date("final_interview_date")
+        offer_n = sum(1 for s in stages_now if s in _OFFER_STAGES)
+        accepted_n = sum(1 for s in stages_now if s == _ACCEPTED_STAGE)
+
+        funnel = [
+            {"stage": "申請",          "count": total,                 "color": "default"},
+            {"stage": "通過初篩",      "count": total - applied_count, "color": "gray"},
+            {"stage": "Phone Screen",  "count": phone_n,               "color": "brown"},
+            {"stage": "一面",          "count": first_n,               "color": "orange"},
+            {"stage": "最終面試",      "count": final_n,               "color": "blue"},
+            {"stage": "Send Offer",    "count": offer_n,               "color": "purple"},
+            {"stage": "Accepted",      "count": accepted_n,            "color": "green"},
+        ]
 
         counts = Counter(stages_now)
-        buckets = [
-            {**b, "count": counts.get(b["stage"], 0)}
-            for b in bucket_defs
+        outcomes = [
+            {"stage": "初篩未過",          "count": applied_count,                       "color": "gray"},
+            {"stage": "Pending response",  "count": counts.get("Pending response", 0),   "color": "brown"},
+            {"stage": "Candidate Rejected","count": counts.get("Candidate Rejected", 0), "color": "pink"},
+            {"stage": "Rejected",          "count": counts.get("Rejected", 0),           "color": "red"},
         ]
 
         apply_dates = [_parse_date(r["apply_date"]) for r in recs]
@@ -274,12 +290,12 @@ def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dic
         out.append({
             "title": title,
             "function": recs[0].get("function", ""),
-            "total": len(recs),
+            "total": total,
             "start_date": start.isoformat() if start else None,
             "days_open": days_open,
-            "buckets": buckets,
+            "funnel": funnel,
+            "outcomes": outcomes,
         })
 
-    # Sort: newest recruitment first
     out.sort(key=lambda p: p["start_date"] or "", reverse=True)
     return out

@@ -12,6 +12,14 @@ PROP_POSITION = "應徵職位"       # rich_text
 PROP_ONBOARD_DATE = "onboard Date"  # date
 PROP_TEAM = "Team"               # select
 
+# Stage date properties — used for cumulative funnel calculation.
+# A non-empty date means the candidate reached that stage.
+PROP_PHONE_SCREEN_DATE = "Phone Screen 日期"
+PROP_FIRST_INTERVIEW_DATE = "First Interview 日期"
+# Notion's "Second Interview 日期" actually tracks the "Final interview" status
+# (the team named it differently — we keep both for clarity).
+PROP_FINAL_INTERVIEW_DATE = "Second Interview 日期"
+
 # Pipeline stages and their grouping are now read dynamically from the Notion
 # Status property schema (see notion_client.fetch_status_schema).
 
