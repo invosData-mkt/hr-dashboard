@@ -29,7 +29,7 @@ export default function PositionPipelines({ positions }) {
 }
 
 function PositionCard({ position }) {
-  const { title, total, start_date, days_open, buckets = [] } = position;
+  const { title, total, start_date, days_open, funnel = [], outcomes = [] } = position;
 
   return (
     <div style={cardStyle}>
@@ -44,32 +44,52 @@ function PositionCard({ position }) {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: `repeat(${Math.max(buckets.length, 1)}, minmax(0, 1fr))`,
-          gap: 4,
-        }}
-      >
-        {buckets.map((b) => {
-          const c = colorFor(b.color);
-          const dim = b.count === 0;
-          return (
-            <div
-              key={b.stage}
-              style={{
-                ...bucketStyle,
-                opacity: dim ? 0.45 : 1,
-              }}
-              title={`${b.group}｜${b.stage}`}
-            >
-              <div style={{ fontSize: 18, fontWeight: 600, color: c.color }}>{b.count}</div>
-              <div style={bucketLabelStyle}>{b.stage}</div>
-              <div style={{ height: 2, borderRadius: 2, marginTop: 5, background: c.barColor }} />
-            </div>
-          );
-        })}
-      </div>
+      <SectionLabel>甄選漏斗（累計）</SectionLabel>
+      <BucketRow buckets={funnel} />
+
+      <SectionLabel style={{ marginTop: 10 }}>結案 / 待處理</SectionLabel>
+      <BucketRow buckets={outcomes} />
+    </div>
+  );
+}
+
+function BucketRow({ buckets }) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${Math.max(buckets.length, 1)}, minmax(0, 1fr))`,
+        gap: 4,
+      }}
+    >
+      {buckets.map((b) => {
+        const c = colorFor(b.color);
+        const dim = b.count === 0;
+        return (
+          <div key={b.stage} style={{ ...bucketStyle, opacity: dim ? 0.45 : 1 }}>
+            <div style={{ fontSize: 18, fontWeight: 600, color: c.color }}>{b.count}</div>
+            <div style={bucketLabelStyle}>{b.stage}</div>
+            <div style={{ height: 2, borderRadius: 2, marginTop: 5, background: c.barColor }} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function SectionLabel({ children, style }) {
+  return (
+    <div
+      style={{
+        fontSize: 10,
+        fontWeight: 600,
+        letterSpacing: "0.04em",
+        color: "#aaa",
+        marginBottom: 6,
+        ...style,
+      }}
+    >
+      {children}
     </div>
   );
 }

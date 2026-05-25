@@ -12,9 +12,12 @@ from .config import (
     NOTION_TOKEN,
     POSITION_TO_ABBR,
     PROP_APPLY_DATE,
+    PROP_FINAL_INTERVIEW_DATE,
+    PROP_FIRST_INTERVIEW_DATE,
     PROP_FUNCTION,
     PROP_NAME,
     PROP_ONBOARD_DATE,
+    PROP_PHONE_SCREEN_DATE,
     PROP_POSITION,
     PROP_SOURCE,
     PROP_STATUS,
@@ -149,6 +152,9 @@ def _parse_page(page: dict) -> dict:
         "function": func_abbr,
         "position_title": position_title,
         "onboard_date": _extract_text(props.get(PROP_ONBOARD_DATE, {})),
+        "phone_screen_date": _extract_text(props.get(PROP_PHONE_SCREEN_DATE, {})),
+        "first_interview_date": _extract_text(props.get(PROP_FIRST_INTERVIEW_DATE, {})),
+        "final_interview_date": _extract_text(props.get(PROP_FINAL_INTERVIEW_DATE, {})),
     }
 
 
