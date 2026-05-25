@@ -135,6 +135,7 @@ function transformApiData(raw, dateRange) {
   const jobTotal = jobData.reduce((a, d) => a + d.count, 0);
 
   const pipeline = raw.pipeline || [];
+  const positions = raw.positions || [];
   const sourceBreakdown = raw.source_breakdown || [];
   const closedReasons = raw.closed_reasons || [];
   const kpi = raw.kpi || {};
@@ -156,6 +157,7 @@ function transformApiData(raw, dateRange) {
     jobTotal,
     dateLabel,
     pipeline,
+    positions,
     sourceBreakdown,
     closedReasons,
     kpi,

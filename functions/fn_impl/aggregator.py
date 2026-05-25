@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from datetime import date, datetime, timedelta
 from typing import Optional
 
-from .config import CLOSED_STATUSES, PIPELINE_STAGES
+from .config import CLOSED_STATUSES, STAGE_ACCEPTED, STAGE_SEND_OFFER
 
 
 def _parse_date(s: str) -> Optional[date]:
@@ -18,7 +18,12 @@ def _parse_date(s: str) -> Optional[date]:
         return None
 
 
-def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
+def aggregate(
+    records: list[dict],
+    start: str = "",
+    end: str = "",
+    status_groups: list[dict] | None = None,
+) -> dict:
     total_records = len(records)
 
     # ── Date filtering (by apply_date) ──
@@ -45,9 +50,25 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
     min_date = min(dates) if dates else None
     max_date = max(dates) if dates else None
 
-    # ── Pipeline counts (ordered, uses "stage" field) ──
+    # ── Pipeline counts (grouped, ordered by Notion schema) ──
     stage_counter = Counter(r["stage"] for r in filtered if r["stage"])
-    pipeline = [{"stage": s, "count": stage_counter.get(s, 0)} for s in PIPELINE_STAGES]
+    groups_in = status_groups or []
+    pipeline = []
+    for g in groups_in:
+        stages_out = [
+            {
+                "stage": o["name"],
+                "count": stage_counter.get(o["name"], 0),
+                "color": o.get("color", "default"),
+            }
+            for o in g.get("options", [])
+        ]
+        pipeline.append({
+            "group": g.get("name", ""),
+            "color": g.get("color", "default"),
+            "total": sum(s["count"] for s in stages_out),
+            "stages": stages_out,
+        })
 
     # ── Monthly trend (by apply_date) ──
     monthly: dict[str, dict] = defaultdict(lambda: {"total": 0, "by_category": defaultdict(int)})
@@ -147,8 +168,8 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
     top_func = func_counter.most_common(1)[0] if func_counter else ("N/A", 0)
 
     # Offer acceptance rate
-    offer_count = stage_counter.get("發出 Offer", 0) + stage_counter.get("已錄取", 0)
-    hired_count = stage_counter.get("已錄取", 0)
+    offer_count = stage_counter.get(STAGE_SEND_OFFER, 0) + stage_counter.get(STAGE_ACCEPTED, 0)
+    hired_count = stage_counter.get(STAGE_ACCEPTED, 0)
     offer_acceptance_rate = round(hired_count / offer_count * 100, 1) if offer_count else 0
 
     # Average days to hire
@@ -160,8 +181,10 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
             hire_days.append((hd - ad).days)
     avg_hire_days = round(sum(hire_days) / len(hire_days), 1) if hire_days else 0
 
-    # Active pipeline (exclude 已結案)
-    active_pipeline = sum(1 for r in filtered if r["stage"] and r["stage"] != "已結案")
+    # Active pipeline (exclude closed-bucket statuses)
+    active_pipeline = sum(
+        1 for r in filtered if r["stage"] and r["stage"] not in CLOSED_STATUSES
+    )
 
     kpi = {
         "total_applicants": n,
@@ -178,6 +201,9 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         "active_pipeline": active_pipeline,
     }
 
+    # ── Per-position pipelines (active positions only, snapshot from full dataset) ──
+    positions = _build_positions(records, status_groups or [])
+
     return {
         "meta": {
             "total_records": total_records,
@@ -188,6 +214,7 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
             },
         },
         "kpi": kpi,
+        "positions": positions,
         "pipeline": pipeline,
         "trend": trend,
         "trend_weekly": trend_weekly,
@@ -196,3 +223,63 @@ def aggregate(records: list[dict], start: str = "", end: str = "") -> dict:
         "job_category_breakdown": job_category_breakdown,
         "closed_reasons": closed_reasons,
     }
+
+
+def _build_positions(records: list[dict], status_groups: list[dict]) -> list[dict]:
+    """Group records by 應徵職位 and emit one card per active position.
+
+    Funnel buckets are mutually-exclusive — every applicant lands in exactly one
+    bucket matching their current Notion status. Bucket order follows the Notion
+    schema (status_groups).
+
+    "Active" = the position has at least one applicant whose stage is not a
+    closed-bucket status (Rejected / Candidate Rejected / Pending response).
+    """
+    # Flatten schema → ordered list of {name, color, group, group_color}
+    bucket_defs: list[dict] = []
+    for g in status_groups:
+        for o in g.get("options", []):
+            bucket_defs.append({
+                "stage": o["name"],
+                "color": o.get("color", "default"),
+                "group": g.get("name", ""),
+                "group_color": g.get("color", "default"),
+            })
+
+    by_position: dict[str, list[dict]] = defaultdict(list)
+    for r in records:
+        title = r.get("position_title", "")
+        if not title:
+            continue
+        by_position[title].append(r)
+
+    today = date.today()
+    out: list[dict] = []
+    for title, recs in by_position.items():
+        stages_now = [r["stage"] for r in recs if r.get("stage")]
+        if not any(s and s not in CLOSED_STATUSES for s in stages_now):
+            continue  # skip positions with no active candidates
+
+        counts = Counter(stages_now)
+        buckets = [
+            {**b, "count": counts.get(b["stage"], 0)}
+            for b in bucket_defs
+        ]
+
+        apply_dates = [_parse_date(r["apply_date"]) for r in recs]
+        apply_dates = [d for d in apply_dates if d]
+        start = min(apply_dates) if apply_dates else None
+        days_open = (today - start).days if start else None
+
+        out.append({
+            "title": title,
+            "function": recs[0].get("function", ""),
+            "total": len(recs),
+            "start_date": start.isoformat() if start else None,
+            "days_open": days_open,
+            "buckets": buckets,
+        })
+
+    # Sort: newest recruitment first
+    out.sort(key=lambda p: p["start_date"] or "", reverse=True)
+    return out

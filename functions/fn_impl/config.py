@@ -4,7 +4,7 @@ import os
 
 # ── Notion property names (matching actual DB schema) ──
 PROP_NAME = "應徵者"             # title
-PROP_STATUS = "應徵狀態"         # select
+PROP_STATUS = "應徵狀態"         # status
 PROP_APPLY_DATE = "收件日期"     # date
 PROP_SOURCE = "履歷來源"         # select
 PROP_FUNCTION = "Function"       # select (job function / category)
@@ -12,32 +12,16 @@ PROP_POSITION = "應徵職位"       # rich_text
 PROP_ONBOARD_DATE = "onboard Date"  # date
 PROP_TEAM = "Team"               # select
 
-# ── Notion status → Dashboard pipeline stage ──
-STATUS_TO_STAGE = {
-    "Applied": "初步篩選",
-    "In Review": "初步篩選",
-    "Phone Screen": "HR 電話",
-    "First Interview": "一面",
-    "Final interview": "最終面試",
-    "Send Offer": "發出 Offer",
-    "Accepted": "已錄取",
-    "Rejected": "已結案",
-    "Candidate Rejected": "已結案",
-    "Pending response": "已結案",
-}
+# Pipeline stages and their grouping are now read dynamically from the Notion
+# Status property schema (see notion_client.fetch_status_schema).
 
-PIPELINE_STAGES = [
-    "初步篩選",
-    "HR 電話",
-    "一面",
-    "最終面試",
-    "發出 Offer",
-    "已錄取",
-    "已結案",
-]
-
-# ── Statuses considered "closed" (結案原因 sub-categories) ──
+# Statuses counted as "closed reason" buckets in the dashboard's 結案原因 chart.
+# These must match Notion option names exactly.
 CLOSED_STATUSES = ["Rejected", "Candidate Rejected", "Pending response"]
+
+# Stage names used by KPI calculations. Must match Notion option names exactly.
+STAGE_SEND_OFFER = "Send Offer"
+STAGE_ACCEPTED = "Accepted"
 
 # ── Notion Function → Dashboard abbreviation ──
 FUNCTION_TO_ABBR = {
